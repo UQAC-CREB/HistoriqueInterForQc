@@ -47,14 +47,21 @@ jobs:
           test -n "$SHINYAPPS_APPNAME" || { echo "SHINYAPPS_APPNAME is empty"; exit 1; }
 
       - name: Deploy to shinyapps.io
+        env:
+          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+          SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET:  ${{ secrets.SHINYAPPS_SECRET }}
+          SHINYAPPS_APPNAME: ${{ vars.SHINYAPPS_APPNAME }}
         run: |
+          # Fallback: repo name si SHINYAPPS_APPNAME est vide
+          APPNAME="${SHINYAPPS_APPNAME:-${GITHUB_REPOSITORY#*/}}"
+          # Remplacer les underscores (non autorisés) par des tirets
+          APPNAME="${APPNAME//_/-}"
+      
           Rscript -e 'rsconnect::setAccountInfo(
                         name   = Sys.getenv("SHINYAPPS_ACCOUNT"),
                         token  = Sys.getenv("SHINYAPPS_TOKEN"),
                         secret = Sys.getenv("SHINYAPPS_SECRET")
                       )'
-          Rscript -e 'rsconnect::deployApp(
-                        appName        = Sys.getenv("SHINYAPPS_APPNAME"),
-                        forceUpdate    = TRUE,
-                        launch.browser = FALSE
-                      )'
+          Rscript -e "rsconnect::deployApp(appName='${APPNAME}', forceUpdate=TRUE, launch.browser=FALSE)"
+
