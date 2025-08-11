@@ -8,13 +8,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # environment: prod        # <= IMPORTANT si tes secrets sont dans l'env "prod"
+    # Si tes secrets sont attachés à un "Environment" (ex. prod), décommente la ligne suivante:
+    # environment: prod
+
+    # Secrets au niveau repo (Settings → Secrets and variables → Actions → Secrets)
     env:
       SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
       SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
       SHINYAPPS_SECRET:  ${{ secrets.SHINYAPPS_SECRET }}
-      SHINYAPPS_APPNAME: ${{ secrets.SHINYAPPS_APPNAME }}
-
+      # Optionnel: variable (non sensible) pour forcer le nom d'app
+      # Ajouter via Settings → Secrets and variables → Actions → Variables
+      SHINYAPPS_APPNAME: ${{ vars.SHINYAPPS_APPNAME }}
 
     steps:
       - name: Checkout repo
@@ -26,42 +30,48 @@ jobs:
       - name: Setup Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      # Install dependencies from DESCRIPTION using pak
+      - name: Show DESCRIPTION (debug)
+        run: |
+          echo "----- DESCRIPTION -----"
+          nl -ba DESCRIPTION || true
+
+      # Installe les dépendances à partir de DESCRIPTION (et rsconnect)
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rsconnect
           needs: project
 
-      # Debug that secrets are actually present (lengths are safe to print)
+      # Petit debug: vérifier que ACCOUNT non vide et montrer le nom calculé
       - name: Debug env
         run: |
           echo "ACCOUNT length: ${#SHINYAPPS_ACCOUNT}"
-          echo "APPNAME: ${SHINYAPPS_APPNAME}"
+          # Fallback de l'app name: variable > nom du repo
+          APPNAME="${SHINYAPPS_APPNAME:-${GITHUB_REPOSITORY#*/}}"
+          APPNAME="${APPNAME//_/-}"
+          echo "Resolved APPNAME: ${APPNAME}"
 
-      - name: Fail fast if secrets missing
+      # Fail fast si secrets manquants (pas d'échec sur APPNAME: on a un fallback)
+      - name: Fail fast if essential secrets missing
         run: |
           test -n "$SHINYAPPS_ACCOUNT" || { echo "SHINYAPPS_ACCOUNT is empty"; exit 1; }
           test -n "$SHINYAPPS_TOKEN"   || { echo "SHINYAPPS_TOKEN is empty"; exit 1; }
           test -n "$SHINYAPPS_SECRET"  || { echo "SHINYAPPS_SECRET is empty"; exit 1; }
-          test -n "$SHINYAPPS_APPNAME" || { echo "SHINYAPPS_APPNAME is empty"; exit 1; }
 
       - name: Deploy to shinyapps.io
-        env:
-          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
-          SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
-          SHINYAPPS_SECRET:  ${{ secrets.SHINYAPPS_SECRET }}
-          SHINYAPPS_APPNAME: ${{ vars.SHINYAPPS_APPNAME }}
         run: |
-          # Fallback: repo name si SHINYAPPS_APPNAME est vide
+          # Calcul du nom d'app final (vars.SHINYAPPS_APPNAME prioritaire, sinon nom du repo)
           APPNAME="${SHINYAPPS_APPNAME:-${GITHUB_REPOSITORY#*/}}"
-          # Remplacer les underscores (non autorisés) par des tirets
-          APPNAME="${APPNAME//_/-}"
-      
+          APPNAME="${APPNAME//_/-}"   # shinyapps n'accepte pas "_"
+          echo "Deploying app as: ${APPNAME}"
+
           Rscript -e 'rsconnect::setAccountInfo(
                         name   = Sys.getenv("SHINYAPPS_ACCOUNT"),
                         token  = Sys.getenv("SHINYAPPS_TOKEN"),
                         secret = Sys.getenv("SHINYAPPS_SECRET")
                       )'
-          Rscript -e "rsconnect::deployApp(appName='${APPNAME}', forceUpdate=TRUE, launch.browser=FALSE)"
-
+          Rscript -e "rsconnect::deployApp(
+                        appName        = '${APPNAME}',
+                        forceUpdate    = TRUE,
+                        launch.browser = FALSE
+                      )"

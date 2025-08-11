@@ -12,7 +12,7 @@ library(ggplot2)
 library(shinyWidgets)
 library(readr)
 library(leafgl)
-library(curl)   # pour curl::curl_download
+
 
 # =======================
 # Sources de données: GitHub ou local
@@ -39,9 +39,9 @@ gh_get_file <- function(path_rel) {
   url  <- gh_raw_url(path_rel)
   dest <- file.path(cache_dir, gsub("[/\\\\]", "_", path_rel))
   if (!file.exists(dest)) {
-    # si repo privé: prévoir un header Authorization: token GITHUB_PAT (on pourra l'ajouter)
+    # Repo public : pas besoin de PAT
     try({
-      curl::curl_download(url, destfile = dest, quiet = TRUE)
+      utils::download.file(url, destfile = dest, mode = "wb", quiet = TRUE)
     }, silent = TRUE)
     if (!file.exists(dest) || file.size(dest) == 0) {
       stop(sprintf("Téléchargement GitHub échoué: %s", url))
@@ -49,6 +49,7 @@ gh_get_file <- function(path_rel) {
   }
   dest
 }
+
 
 # --------- Terra/GDAL options (perf) ----------
 # terraOptions(memfrac = 0.6, todisk = TRUE, tempdir = tempdir())
