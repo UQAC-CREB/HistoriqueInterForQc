@@ -3,7 +3,6 @@ Package: interfor-app
 Title: Interventions forestieres
 Version: 0.0.1
 Encoding: UTF-8
-
 Imports:
     qs,
     shiny,
