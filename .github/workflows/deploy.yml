@@ -8,11 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # environment: prod        # <= IMPORTANT si tes secrets sont dans l'env "prod"
     env:
       SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
       SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
       SHINYAPPS_SECRET:  ${{ secrets.SHINYAPPS_SECRET }}
       SHINYAPPS_APPNAME: ${{ secrets.SHINYAPPS_APPNAME }}
+
 
     steps:
       - name: Checkout repo
