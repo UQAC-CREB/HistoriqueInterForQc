@@ -1,6 +1,8 @@
-# .rscignore
+# --- Données brutes non utilisées directement dans l'app ---
 data_ori/
 data/rasters/
+
+# --- Formats SIG lourds ou intermédiaires ---
 *.tif
 *.gpkg
 *.shp
@@ -10,9 +12,35 @@ data/rasters/
 *.sbn
 *.sbx
 *.xml
-*.lock
 *.qgz
 *.qgs
+
+# --- Fichiers temporaires / verrous ---
+*.lock
+
+# --- Dossiers et fichiers de test ou documentation ---
 tests/
-README*
 docs/
+README*
+LICENSE*
+
+# --- Fichiers et dossiers RStudio ---
+.Rproj.user/
+*.Rproj
+.Rhistory
+.RData
+
+# --- Autres répertoires de travail ou cache local ---
+.cache/
+tmp/
+temp/
+
+# --- Fichiers GitHub Actions (pas utiles à l'app déployée) ---
+.github/
+
+# --- Fichiers divers non utilisés par l'app ---
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.bak

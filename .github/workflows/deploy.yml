@@ -8,9 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    # Secrets niveau repo (Settings → Secrets and variables → Actions → Secrets)
-    # Variables niveau repo (Settings → Secrets and variables → Actions → Variables)
     env:
       SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
       SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
@@ -18,54 +15,29 @@ jobs:
       SHINYAPPS_APPNAME: ${{ vars.SHINYAPPS_APPNAME }}   # ex: intervention-forestiere
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v2
-
-      - name: Setup Pandoc
-        uses: r-lib/actions/setup-pandoc@v2
-
-      - name: Show DESCRIPTION (debug)
+      # Dépendances système (utile pour {sf}/{terra})
+      - name: Install system deps for sf/terra
         run: |
-          echo "----- DESCRIPTION -----"
-          nl -ba DESCRIPTION || true
+          sudo apt-get update
+          sudo apt-get install -y libgdal-dev libgeos-dev libproj-dev libudunits2-dev
 
-      # Installe les dépendances déclarées dans DESCRIPTION (+ rsconnect)
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rsconnect
-          needs: project
-
-      # Vérifs minimales des secrets (appname peut être vide si tu veux fallback)
-      - name: Fail fast if essential secrets missing
-        run: |
-          test -n "$SHINYAPPS_ACCOUNT" || { echo "SHINYAPPS_ACCOUNT is empty"; exit 1; }
-          test -n "$SHINYAPPS_TOKEN"   || { echo "SHINYAPPS_TOKEN is empty"; exit 1; }
-          test -n "$SHINYAPPS_SECRET"  || { echo "SHINYAPPS_SECRET is empty"; exit 1; }
-
-      - name: Debug resolved app name
-        run: |
-          # Si SHINYAPPS_APPNAME est vide, fallback au nom du repo (et remplace _ par -)
-          APPNAME="${SHINYAPPS_APPNAME:-${GITHUB_REPOSITORY#*/}}"
-          APPNAME="${APPNAME//_/-}"
-          echo "Resolved APPNAME: ${APPNAME}"
+      # Restaure l'environnement à partir de renv.lock
+      - name: Setup renv
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Deploy to shinyapps.io
         run: |
-          # Nom final (variables > fallback)
           APPNAME="${SHINYAPPS_APPNAME:-${GITHUB_REPOSITORY#*/}}"
           APPNAME="${APPNAME//_/-}"
-          echo "Deploying app as: ${APPNAME}"
-
           Rscript -e 'rsconnect::setAccountInfo(
                         name   = Sys.getenv("SHINYAPPS_ACCOUNT"),
                         token  = Sys.getenv("SHINYAPPS_TOKEN"),
                         secret = Sys.getenv("SHINYAPPS_SECRET")
                       )'
-          # Déploie sur l'app existante (même nom) => mise à jour sans créer de nouvelle app
           Rscript -e "rsconnect::deployApp(
                         appName        = '${APPNAME}',
                         forceUpdate    = TRUE,
