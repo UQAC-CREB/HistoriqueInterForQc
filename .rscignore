@@ -1,46 +1,51 @@
-# --- Données brutes non utilisées directement dans l'app ---
-data_ori/
-data/rasters/
+# --- Répertoires de contrôle de version / CI ---
+^\.git/
+^\.github/
 
-# --- Formats SIG lourds ou intermédiaires ---
-*.tif
-*.gpkg
-*.shp
-*.dbf
-*.shx
-*.prj
-*.sbn
-*.sbx
-*.xml
-*.qgz
-*.qgs
+# --- renv : garder renv/activate.R & renv.lock, exclure le reste lourd ---
+^renv/library/
+^renv/cache/
+^renv/staging/
+^renv/python/
+
+# --- Données brutes non utilisées directement par l'app ---
+^data_ori/
+^data/rasters/
+
+# --- Formats SIG lourds/intermédiaires (non utilisés par l'app) ---
+.*\.tif$
+.*\.gpkg$
+.*\.shp$
+.*\.dbf$
+.*\.shx$
+.*\.prj$
+.*\.sbn$
+.*\.sbx$
+.*\.xml$
+.*\.qgz$
+.*\.qgs$
 
 # --- Fichiers temporaires / verrous ---
-*.lock
+.*\.lock$
 
-# --- Dossiers et fichiers de test ou documentation ---
-tests/
-docs/
-README*
-LICENSE*
+# --- Dossiers et fichiers de test / docs ---
+^tests/
+^docs/
+^README.*$
+^LICENSE.*$
 
-# --- Fichiers et dossiers RStudio ---
-.Rproj.user/
-*.Rproj
-.Rhistory
-.RData
+# --- Fichiers RStudio / temporaires ---
+^\.Rproj\.user/
+.*\.Rproj$
+^\.Rhistory$
+^\.RData$
 
-# --- Autres répertoires de travail ou cache local ---
-.cache/
-tmp/
-temp/
-
-# --- Fichiers GitHub Actions (pas utiles à l'app déployée) ---
-.github/
-
-# --- Fichiers divers non utilisés par l'app ---
-*.zip
-*.tar
-*.tar.gz
-*.7z
-*.bak
+# --- Autres caches / archives éventuels ---
+^\.cache/
+^tmp/
+^temp/
+.*\.zip$
+.*\.tar$
+.*\.tar\.gz$
+.*\.7z$
+.*\.bak$
