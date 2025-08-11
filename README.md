@@ -1,4 +1,4 @@
-#🌲 InterventionFor_Shiny – Interventions forestières Saguenay (1960–2022)
+# 🌲 InterventionFor_Shiny – Interventions forestières Saguenay (1960–2022)
 
 Application Shiny pour visualiser les interventions forestières au Québec de 1960 à 2022.
 ![Deploy to shinyapps.io](https://github.com/hgesdrn/InterventionFor_Shiny/actions/workflows/deploy.yml/badge.svg)
@@ -10,7 +10,7 @@ Application Shiny pour visualiser les interventions forestières au Québec de 1
 
 ## 🔗 Lien vers l'application
 
-👉 [Application en ligne sur shinyapps.io](https://hgesdrn.shinyapps.io/InterventionFor_Shiny/)
+👉 [Application en ligne sur shinyapps.io](https://hgesdrn.shinyapps.io/intervention-forestiere/)
 
 ---
 
