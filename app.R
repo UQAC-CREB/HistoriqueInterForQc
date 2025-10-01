@@ -161,7 +161,7 @@ ui <- fluidPage(
     }
   ")),
   
-  div("INTERVENTIONS FORESTIÈRES DANS LES UNITÉS D'AMÉNAGEMENTS DU SAGUENAY DE 1960 À 2022", class = "header-title"),
+  div("INTERVENTIONS FORESTIÈRES DANS LES UNITÉS D'AMÉNAGEMENTS DU SAGUENAY-Lac-ST-JEAN DE 1960 À 2022", class = "header-title"),
   
   fluidRow(
     column(6,
