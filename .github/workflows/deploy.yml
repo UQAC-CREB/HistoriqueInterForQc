@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+      SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_NAME }}
       SHINYAPPS_TOKEN:   ${{ secrets.SHINYAPPS_TOKEN }}
       SHINYAPPS_SECRET:  ${{ secrets.SHINYAPPS_SECRET }}
       SHINYAPPS_APPNAME: ${{ vars.SHINYAPPS_APPNAME }}
@@ -44,7 +44,7 @@ jobs:
           APPNAME="${APPNAME//_/-}"
 
           Rscript -e 'rsconnect::setAccountInfo(
-            name   = Sys.getenv("SHINYAPPS_ACCOUNT"),
+            name   = Sys.getenv("SHINYAPPS_NAME"),
             token  = Sys.getenv("SHINYAPPS_TOKEN"),
             secret = Sys.getenv("SHINYAPPS_SECRET")
           )'
