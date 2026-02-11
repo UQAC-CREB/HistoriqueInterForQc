@@ -49,3 +49,9 @@
 .*\.tar\.gz$
 .*\.7z$
 .*\.bak$
+
+
+# --- Ajout pour limiter renv
+renv/
+renv.lock
+.Rprofile
