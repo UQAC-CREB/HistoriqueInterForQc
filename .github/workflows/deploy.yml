@@ -25,8 +25,7 @@ jobs:
       - name: Setup Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      # Dépendances système utiles pour {sf}/{terra}
-      - name: Install system dependencies
+      - name: Install system dependencies (sf/terra)
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -35,11 +34,9 @@ jobs:
             libproj-dev \
             libudunits2-dev
 
-      # Installer rsconnect et les dépendances de l'app
-      - name: Install R packages
+      - name: Install rsconnect
         run: |
-          Rscript -e 'install.packages(c("rsconnect","remotes"), repos="https://cloud.r-project.org")'
-          Rscript -e 'deps <- unique(rsconnect::appDependencies(appDir=".", quiet=TRUE)$Package); print(deps); install.packages(deps, repos="https://cloud.r-project.org")'
+          Rscript -e 'install.packages("rsconnect", repos="https://cloud.r-project.org")'
 
       - name: Deploy to shinyapps.io
         run: |
