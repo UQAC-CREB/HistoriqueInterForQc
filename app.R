@@ -20,8 +20,8 @@ library(leafgl)
 USE_GITHUB   <- TRUE  # mets FALSE pour revenir en local
 
 # -> Renseigne tes infos GitHub :
-GH_USER      <- "hgesdrn"         # ex: "hgesdrn"  <<< À REMPLACER
-GH_REPO      <- "InterventionFor_Shiny"         # ex: "InterventionFor_Shiny"  <<< À REMPLACER
+GH_USER      <- "UQAC-CREB"         # ex: "hgesdrn"  <<< À REMPLACER
+GH_REPO      <- "HistoriqueInterForQc"         # ex: "InterventionFor_Shiny"  <<< À REMPLACER
 GH_BRANCH    <- "main"             # ou "master"
 
 # Dossier de cache pour les fichiers rapatriés de GitHub
