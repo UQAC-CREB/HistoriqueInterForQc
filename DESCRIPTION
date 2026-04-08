@@ -7,7 +7,6 @@ Imports:
     ggplot2,
     leafgl,
     leaflet,
-    qs,
     readr,
     sf,
     shiny,

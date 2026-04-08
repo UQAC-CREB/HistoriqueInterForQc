@@ -2,7 +2,6 @@
 # Interventions forestières — version optimisée
 # ===============================
 
-library(qs)
 library(shiny)
 library(leaflet)
 library(terra)
@@ -20,9 +19,9 @@ library(leafgl)
 USE_GITHUB   <- TRUE  # mets FALSE pour revenir en local
 
 # -> Renseigne tes infos GitHub :
-GH_USER      <- "UQAC-CREB"         # ex: "hgesdrn"  <<< À REMPLACER
-GH_REPO      <- "HistoriqueInterForQc"         # ex: "InterventionFor_Shiny"  <<< À REMPLACER
-GH_BRANCH    <- "main"             # ou "master"
+GH_USER      <- "UQAC-CREB"
+GH_REPO      <- "HistoriqueInterForQc"
+GH_BRANCH    <- "main"
 
 # Dossier de cache pour les fichiers rapatriés de GitHub
 cache_dir <- file.path(tempdir(), "if_cache")
@@ -39,7 +38,6 @@ gh_get_file <- function(path_rel) {
   url  <- gh_raw_url(path_rel)
   dest <- file.path(cache_dir, gsub("[/\\\\]", "_", path_rel))
   if (!file.exists(dest)) {
-    # Repo public : pas besoin de PAT
     try({
       utils::download.file(url, destfile = dest, mode = "wb", quiet = TRUE)
     }, silent = TRUE)
@@ -61,9 +59,9 @@ gh_get_file <- function(path_rel) {
 # CSV (URL GitHub directe possible avec readr)
 chemin_csv <- if (USE_GITHUB) gh_raw_url("data/table_barplot.csv") else "data/table_barplot.csv"
 
-# vecteur UA simplifié (.qs via cache si GitHub)
-uasag_path   <- if (USE_GITHUB) gh_get_file("data/uasag_simpl.qs") else "data/uasag_simpl.qs"
-uasag_simpl  <- qs::qread(uasag_path)
+# vecteur UA simplifié (.rds via cache si GitHub)
+uasag_path  <- if (USE_GITHUB) gh_get_file("data/uasag_simpl.rds") else "data/uasag_simpl.rds"
+uasag_simpl <- readRDS(uasag_path)
 
 # 🎨 Palette
 palette_classes <- c(
@@ -105,18 +103,18 @@ centroides_ua <- sf::st_as_sf(centro_df, coords = c("lon","lat"), crs = 4326)
 .cache_vec <- new.env(parent = emptyenv())
 path_vec_base <- "data/vec"  # racine dans le repo (ou local)
 
-# charge paresseusement un .qs par période (depuis GitHub si USE_GITHUB)
+# charge paresseusement un .rds par période (depuis GitHub si USE_GITHUB)
 load_period <- function(p) {
   key <- paste0("p_", p)
   if (!exists(key, envir = .cache_vec)) {
-    rel <- file.path(path_vec_base, paste0("IntFor_", p, ".qs"))
+    rel <- file.path(path_vec_base, paste0("IntFor_", p, ".rds"))
     f <- if (USE_GITHUB) gh_get_file(rel) else rel
     if (!file.exists(f)) {
       showNotification(paste("Fichier manquant :", basename(rel)), type = "error")
       assign(key, sf::st_sf(Periode=character(), CLASS=character(),
                             geometry=sf::st_sfc(crs=4326)), envir = .cache_vec)
     } else {
-      assign(key, qs::qread(f), envir = .cache_vec)
+      assign(key, readRDS(f), envir = .cache_vec)
     }
   }
   get(key, envir = .cache_vec)

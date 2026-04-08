@@ -5,6 +5,6 @@ account: creb-uqac
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16653177
-bundleId: 11569083
+bundleId: 11572871
 url: https://creb-uqac.shinyapps.io/HistoriqueInterForQc/
 version: 1
